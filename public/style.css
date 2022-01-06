@@ -1,0 +1,52 @@
+html, body {
+    height: 100%;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    background-color: darkgrey;
+    margin: 0;
+    font-family: "Raleway","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 1.1em;
+}
+fieldset {
+    font-weight: bold;
+}
+label, pre {
+    font-weight: normal;
+}
+#content {
+    flex: 1 0 auto;
+    margin: auto;
+
+}
+#footer {
+    flex-shrink: 0;
+    color: #fff;
+    background-color: #040100bb;
+    line-height: 2em;
+    padding-left: 3em;
+}
+table {
+    border-spacing: 0.5em;
+    padding-top: 40px;
+}
+td {
+    padding: 1em;
+}
+td.header {
+    text-decoration: underline;
+}
+span {
+    line-height: 2em;
+}
+#cottage {
+    width: 63px;
+    height: 39px;
+    float: right;
+    margin-right: 3em;
+}
+input, textarea {
+    font-size: 1em;
+    margin-bottom: 10px;
+}
