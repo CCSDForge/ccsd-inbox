@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">
-            <img src="/img/episciences.svg" alt="application logo" height="30" class="d-inline-block align-text-top">
+            <img src="<?= $_ENV["APP_LOGO"] ?>" alt="application logo" height="30" class="d-inline-block align-text-top">
             Inbox&nbsp;<?= $_ENV["APP_NAME"] ?>&nbsp<span class="badge bg-info" style="font-size:40%"><?= $_ENV['ENV'] ?></span>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
