@@ -52,20 +52,39 @@ $notifications = $coarNotificationManager->get_notifications();
 
             $inCounter = 0;
             $outCounter = 0;
-            $inBound = '<table id="inbound" class="table table-striped table-hover"><caption>Inbound</caption><thead class="table-light"><tr><th>Time</th><th>Id</th></tr></thead>';
-            $outBound = '<table id="outbound"class="table table-striped table-hover"><caption>Outbound</caption><thead class="table-light"><tr><th>Time</th><th>Id</th></tr></thead><tbody>';
+
+            $headerTpl = '<table id="inbound" class="table table-striped table-hover">
+                            <caption>%s</caption>
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Id</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>';
+
+            $lineTpl = '<tr>
+                            <td>%s</td>
+                            <td>%s</td>
+                            <td>%s</td>
+                        </tr>';
+
+
+            $inBound = sprintf($headerTpl, 'Inbound');
+            $outBound = sprintf($headerTpl, 'Outbound');
 
             foreach ($notifications->findAll() as $notification) {
-                $time = $notification->getTimestamp()->format('D, d M Y H:i:s');
-                $id = $notification->getId();
+                $cnTime = $notification->getTimestamp()->format('D, d M Y H:i:s');
+                $cnId = $notification->getId();
+                $cnType = $notification->getType();
+
+                $cnLineData = sprintf($lineTpl, $cnId, $cnTime, $cnType);
 
                 if ($notification instanceof \cottagelabs\coarNotifications\orm\OutboundCOARNotification) {
-                    $outBound .= "<tr>";
-                    $outBound .= "<td>$time</td><td>$id</td></tr>";
+                    $outBound .= $cnLineData;
                     $outCounter++;
                 } else {
-                    $inBound .= "<tr>";
-                    $inBound .= "<td>$time</td><td>$id</td></tr>";
+                    $inBound .= $cnLineData;
                     $inCounter++;
                 }
             }
