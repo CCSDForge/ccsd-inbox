@@ -42,24 +42,7 @@ $notifications = $coarNotificationManager->get_notifications();
 
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/">
-            <img src="/img/episciences.svg" alt="application logo" height="30" class="d-inline-block align-text-top">
-            <?= $_ENV["APP_NAME"] ?>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
-                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-                <a class="nav-link" href="index.php">Inbox</a>
-                <a class="nav-link active" aria-current="page" href="#">List content</a>
-            </div>
-        </div>
-    </div>
-</nav>
+<?php include 'navbar-top.php'; ?>
 
 <div class="container-fluid">
 
@@ -90,14 +73,11 @@ $notifications = $coarNotificationManager->get_notifications();
             ?>
             <nav class="nav">
                 <a class="nav-link" href="#inbound">Inbound&nbsp;<span
-                            class="badge bg-secondary"><?= $inCounter ?></span></a>
+                            class="badge bg-success"><?= $inCounter ?></span></a>
                 <a class="nav-link" href="#outbound">Outbound&nbsp;<span
-                            class="badge bg-secondary"><?= $outCounter ?></span></a>
+                            class="badge bg-primary"><?= $outCounter ?></span></a>
             </nav>
             <?php
-            //   print("<h2>Inbound: $inCounter</h2>");
-            // print("<h2>Outbound: $outCounter</h2>");
-
             if ($inCounter > 0) {
                 echo '<h2>Inbound</h2>';
                 print("$inBound</tbody></table><hr>");
@@ -113,15 +93,7 @@ $notifications = $coarNotificationManager->get_notifications();
     </div>
 </div>
 
-<div class="container" style="margin-top: 5%;">
-    <nav class="navbar fixed-bottom navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#"><img
-                        src="<?= $_ENV["APP_BRANDING_ICON"] ?>"
-                        style="height: 50px" alt="brand logo"></a><?= $_ENV["APP_BRANDING"] ?>
-        </div>
-    </nav>
-</div>
+<?php include 'navbar-bottom.php' ?>
 
 </body>
 </html>

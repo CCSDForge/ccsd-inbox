@@ -1,6 +1,6 @@
 # ccsd-inbox
 
-An implementation of a *COAR Notification Inbox* based on software from [CottageLabs / coar-notifications](https://github.com/CottageLabs/coar-notifications)
+An implementation of a *COAR Notification Inbox* based on the [COAR Notification manager](https://github.com/CottageLabs/coar-notifications) developed by [CottageLabs](https://github.com/CottageLabs)
 
 **Alpha Release** 
 
