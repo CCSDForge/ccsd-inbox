@@ -8,12 +8,12 @@ use Doctrine\ORM\EntityManager;
 
 
 require_once "vendor/autoload.php";
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
 // the connection configuration
 $conn = [];
-require __DIR__ . '/db-config.php';
+require __DIR__ . '/public/db-config.php';
 
 
 // Create a simple "default" Doctrine ORM configuration for Annotations
