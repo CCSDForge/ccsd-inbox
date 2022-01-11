@@ -10,9 +10,9 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
-                <a class="nav-link btn btn-outline-secondary" href="index.php">Inbox</a>
+                <a class="nav-link btn btn-outline-secondary" href="/">Inbox</a>
                 &nbsp;
-                <a class="nav-link btn btn-outline-secondary" href="inbox.php">List content</a>
+                <a class="nav-link btn btn-outline-secondary" href="send.php">Send</a>
             </div>
         </div>
     </div>
