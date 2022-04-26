@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <a class="navbar-brand" href="/">
             <img src="<?= $_ENV["APP_LOGO"] ?>" alt="application logo" height="30" class="d-inline-block align-text-top">
-            Inbox&nbsp;<?= $_ENV["APP_NAME"] ?>&nbsp<span class="badge bg-info" style="font-size:40%"><?= $_ENV['ENV'] ?></span>
+            Inbox&nbsp;<?= $_ENV["APP_NAME"] ?>&nbsp;<span class="badge bg-info" style="font-size:40%"><?= $_ENV['ENV'] ?></span>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
                 aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
