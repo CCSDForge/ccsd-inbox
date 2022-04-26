@@ -15,4 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 -->
 
-## Unreleased
+<!-- ## Unreleased -->
+
+## 0.1-beta
+- Moving to CCSD's COAR Notification Fork
+- Bump requirement to PHP 7.4
+
