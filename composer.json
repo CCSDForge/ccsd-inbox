@@ -1,9 +1,15 @@
 {
   "name": "ccsd/ccsd-inbox",
   "description": "A COAR Notification Inbox for CCSD Platforms",
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/CCSDForge/coar-notifications"
+    }
+  ],
   "require": {
-    "php": ">=7.2",
-    "cottagelabs/coar-notifications": "^0.9.6",
+    "php": "^7.4",
+    "cottagelabs/coar-notifications": "dev-main",
     "vlucas/phpdotenv": "^5.4"
   },
   "require-dev": {
