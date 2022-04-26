@@ -5,6 +5,7 @@
 
 
 use cottagelabs\coarNotifications\COARNotificationManager;
+use cottagelabs\coarNotifications\orm\OutboundCOARNotification;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
@@ -38,6 +39,12 @@ $notifications = $coarNotificationManager->get_notifications();
     <title><?= $_ENV["APP_NAME"] ?> - COAR Notification Manager</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/styles/default.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
+    <!-- and it's easy to individually load additional languages -->
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/languages/php.min.js"></script>
+    <script>hljs.highlightAll();</script>
 </head>
 
 <body>
@@ -59,7 +66,10 @@ $notifications = $coarNotificationManager->get_notifications();
                                 <tr>
                                     <th>Time</th>
                                     <th>Id</th>
+                                    <th>From</th>
+                                    <th>To</th>
                                     <th>Type</th>
+                                    <th>Show Content</th>
                                 </tr>
                             </thead>';
 
@@ -67,6 +77,18 @@ $notifications = $coarNotificationManager->get_notifications();
                             <td>%s</td>
                             <td>%s</td>
                             <td>%s</td>
+                            <td>%s</td>
+                            <td>%s</td>
+                            <td><button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#%s" aria-expanded="false" aria-controls="%s">Notification</button></td>
+                            </tr>
+                            <tr>
+                            <td colspan="4">
+                                <div class="collapse" id="%s">
+                                    <div class="card card-body">
+                                        <pre><code class="language-php">%s</code></pre>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>';
 
 
@@ -74,13 +96,27 @@ $notifications = $coarNotificationManager->get_notifications();
             $outBound = sprintf($headerTpl, 'Outbound');
 
             foreach ($notifications->findAll() as $notification) {
+
+                /**
+                 * @var $notification OutboundCOARNotification
+                 */
                 $cnTime = $notification->getTimestamp()->format('D, d M Y H:i:s');
-                $cnId = $notification->getId();
-                $cnType = $notification->getType();
+                $cnId = htmlspecialchars($notification->getId());
+                $cnFromId = htmlspecialchars($notification->getFromId());
+                $cnToId = htmlspecialchars($notification->getToId());
+                $cnIdHash = htmlspecialchars('_' . md5($notification->getId()));
+                $cnType = htmlspecialchars($notification->getType());
 
-                $cnLineData = sprintf($lineTpl, $cnId, $cnTime, $cnType);
+                try {
+                    $cnOriginal = json_decode($notification->getOriginal(), true, 512, JSON_THROW_ON_ERROR);
+                } catch (JsonException $e) {
+                    $cnOriginal = '';
+                }
+                $cnOriginal = htmlspecialchars(var_export($cnOriginal,true));
 
-                if ($notification instanceof \cottagelabs\coarNotifications\orm\OutboundCOARNotification) {
+                $cnLineData = sprintf($lineTpl, $cnTime, $cnId, $cnFromId, $cnToId, $cnType, $cnIdHash, $cnIdHash,$cnIdHash, $cnOriginal);
+
+                if ($notification instanceof OutboundCOARNotification) {
                     $outBound .= $cnLineData;
                     $outCounter++;
                 } else {
@@ -113,6 +149,6 @@ $notifications = $coarNotificationManager->get_notifications();
 </div>
 
 <?php include 'navbar-bottom.php' ?>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha256-cMPWkL3FzjuaFSfEYESYmjF25hCIL6mfRSPnW8OVvM4=" crossorigin="anonymous"></script>
 </body>
 </html>

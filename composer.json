@@ -10,7 +10,8 @@
   "require": {
     "php": "^7.4",
     "cottagelabs/coar-notifications": "dev-main",
-    "vlucas/phpdotenv": "^5.4"
+    "vlucas/phpdotenv": "^5.4",
+    "ext-json": "*"
   },
   "require-dev": {
     "phpmd/phpmd": "@stable",

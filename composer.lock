@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6259daff807c9ac9a01bbd3f7c39305b",
+    "content-hash": "72e5531a8dd9d0e8e60221d3fe94d6e8",
     "packages": [
         {
             "name": "brick/math",
@@ -72,12 +72,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/CCSDForge/coar-notifications.git",
-                "reference": "cf4a4eb060bf95d42779ca1dd9e8ba67aa179a68"
+                "reference": "d9e04a80cf4bf61819a182b1ed137d48d947556c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CCSDForge/coar-notifications/zipball/cf4a4eb060bf95d42779ca1dd9e8ba67aa179a68",
-                "reference": "cf4a4eb060bf95d42779ca1dd9e8ba67aa179a68",
+                "url": "https://api.github.com/repos/CCSDForge/coar-notifications/zipball/d9e04a80cf4bf61819a182b1ed137d48d947556c",
+                "reference": "d9e04a80cf4bf61819a182b1ed137d48d947556c",
                 "shasum": ""
             },
             "require": {
@@ -121,7 +121,7 @@
             "support": {
                 "source": "https://github.com/CCSDForge/coar-notifications/tree/main"
             },
-            "time": "2022-04-26T08:45:13+00:00"
+            "time": "2022-04-26T11:56:00+00:00"
         },
         {
             "name": "doctrine/cache",
@@ -4746,7 +4746,8 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.4"
+        "php": "^7.4",
+        "ext-json": "*"
     },
     "platform-dev": [],
     "plugin-api-version": "2.2.0"
