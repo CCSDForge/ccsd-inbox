@@ -26,29 +26,85 @@ $logger->pushHandler($handler);
 $conn = [];
 require __DIR__ . '/db-config.php';
 
-$coarNotificationManager = new COARNotificationManager($conn, true, $logger);
-$notifications = $coarNotificationManager->get_notifications();
+try {
+    $coarNotificationManager = new COARNotificationManager($conn, $logger);
+} catch (\cottagelabs\coarNotifications\orm\COARNotificationNoDatabaseException $e) {
+    http_send_status('500');
+    echo 'Database unavailable';
+    if (isset($logger)) {
+        $logger->error($e->getMessage());
+    }
+    return;
+}
+
+$notifications = [];
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    $coarNotificationManager->setOptionsResponseHeaders();
+    return;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        $coarNotificationManager->getPostResponse();
+    } catch (\cottagelabs\coarNotifications\orm\COARNotificationNoDatabaseException $e) {
+        http_send_status('500');
+        echo 'Service unavailable';
+        if (isset($logger)) {
+            $logger->error($e->getMessage());
+        }
+        return;
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    if (isset($_GET["id"]) && ($_GET["id"] !== '')) {
+        $oneNotification = $coarNotificationManager->getNotificationById($_GET["id"]);
+        if ($oneNotification === null) {
+            $notificationNotFound = sprintf('<div class="alert alert-warning" role="alert">%s Not found</div>', htmlspecialchars($_GET["id"]));
+            $notifications = [];
+        } else {
+            $notifications[] = $oneNotification;
+            $notificationFound = sprintf('<div class="alert alert-info" role="alert">%s found</div>', htmlspecialchars($_GET["id"]));
+        }
+
+    } else {
+        $notifications = $coarNotificationManager->getNotifications();
+    }
+}
+
 
 ?>
-
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $_ENV["APP_NAME"] ?> - COAR Notification Manager</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/styles/default.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.8.0/build/styles/default.min.css">
 </head>
 
 <body>
 
 <style>
-    td { font-size:90%; }
+    td {
+        font-size: 90%;
+    }
 </style>
 
-<?php include 'navbar-top.php'; ?>
+<?php include_once 'navbar-top.php'; ?>
+
+<?php if (isset($notificationNotFound) && $notificationNotFound !== '') {
+    echo $notificationNotFound;
+}
+if (isset($notificationFound) && $notificationFound !== '') {
+    echo $notificationFound;
+}
+?>
 
 <div class="container-fluid">
 
@@ -84,7 +140,7 @@ $notifications = $coarNotificationManager->get_notifications();
                             <td colspan="6">
                                 <div class="collapse" id="%s">
                                     <div class="card card-body">
-                                        <pre><code class="language-php">%s</code></pre>
+                                        <pre><code class="language-json">%s</code></pre>
                                     </div>
                                 </div>
                             </td>
@@ -94,28 +150,31 @@ $notifications = $coarNotificationManager->get_notifications();
             $inBound = sprintf($headerTpl, 'Inbound');
             $outBound = sprintf($headerTpl, 'Outbound');
 
-            foreach ($notifications->findAll() as $notification) {
+            foreach ($notifications as $oneNotification) {
 
                 /**
-                 * @var $notification OutboundCOARNotification
+                 * @var $oneNotification OutboundCOARNotification
                  */
-                $cnTime = $notification->getTimestamp()->format('D, d M Y H:i:s');
-                $cnId = htmlspecialchars($notification->getId());
-                $cnFromId = htmlspecialchars($notification->getFromId());
-                $cnToId = htmlspecialchars($notification->getToId());
-                $cnIdHash = htmlspecialchars('_' . md5($notification->getId()));
-                $cnType = htmlspecialchars($notification->getType());
+                $cnTime = $oneNotification->getTimestamp()->format('D, d M Y H:i:s');
+                $cnId = htmlspecialchars($oneNotification->getId());
+                $cnFromId = htmlspecialchars($oneNotification->getFromId());
+                $cnToId = htmlspecialchars($oneNotification->getToId());
+                $cnIdHash = htmlspecialchars('_' . md5($oneNotification->getId()));
+                $cnType = htmlspecialchars($oneNotification->getType());
 
                 try {
-                    $cnOriginal = json_decode($notification->getOriginal(), true, 512, JSON_THROW_ON_ERROR);
+                    $cnOriginal = $oneNotification->getOriginal();
+                    $json_decodedOriginalNotification = json_decode($cnOriginal, false, 512, JSON_THROW_ON_ERROR);
+                    $cnOriginal = json_encode($json_decodedOriginalNotification, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+                    $cnOriginal = htmlspecialchars($cnOriginal, true);
                 } catch (JsonException $e) {
                     $cnOriginal = '';
                 }
-                $cnOriginal = htmlspecialchars(var_export($cnOriginal,true));
 
-                $cnLineData = sprintf($lineTpl, $cnTime, $cnId, $cnFromId, $cnToId, $cnType, $cnIdHash, $cnIdHash,$cnIdHash, $cnOriginal);
 
-                if ($notification instanceof OutboundCOARNotification) {
+                $cnLineData = sprintf($lineTpl, $cnTime, $cnId, $cnFromId, $cnToId, $cnType, $cnIdHash, $cnIdHash, $cnIdHash, $cnOriginal);
+
+                if ($oneNotification instanceof OutboundCOARNotification) {
                     $outBound .= $cnLineData;
                     $outCounter++;
                 } else {
@@ -127,30 +186,31 @@ $notifications = $coarNotificationManager->get_notifications();
             ?>
             <nav class="nav">
                 <a class="nav-link" href="#inbound">Inbound&nbsp;<span
-                            class="badge bg-success"><?= $inCounter ?></span></a>
-                <a class="nav-link" href="#outbound">Outbound&nbsp;<span
+                            class="badge bg-success"><?= $inCounter ?></span></a> <a class="nav-link" href="#outbound">Outbound&nbsp;<span
                             class="badge bg-primary"><?= $outCounter ?></span></a>
             </nav>
-            <?php
-            if ($inCounter > 0) {
-                echo '<h2>Inbound</h2>';
-                print("$inBound</tbody></table><hr>");
-            }
+            <?php if ($inCounter > 0) : ?>
+                <h2>Inbound</h2>
+                <?= $inBound; ?>
+                </tbody></table>
+                <hr>
+            <?php endif; ?>
 
-            if ($outCounter > 0) {
-                echo '<h2>Outbound</h2>';
-                print("$outBound</tbody></table>");
-            }
-            ?>
+            <?php if ($outCounter > 0) : ?>
+                <h2>Outbound</h2>
+                <?= $outBound; ?>
+                </tbody></table>
+                <hr>
+            <?php endif; ?>
         </div>
-
     </div>
 </div>
 
-<?php include 'navbar-bottom.php' ?>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha256-cMPWkL3FzjuaFSfEYESYmjF25hCIL6mfRSPnW8OVvM4=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/highlight.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.5.1/build/languages/php.min.js"></script>
+<?php include_once 'navbar-bottom.php' ?>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.8.0/build/highlight.min.js"></script>
 <script>hljs.highlightAll();</script>
 </body>
 </html>

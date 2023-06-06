@@ -34,27 +34,44 @@ require __DIR__ . '/db-config.php';
 $msg = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $coarNotificationManager = new COARNotificationManager($conn, false, $logger);
+    try {
+        $coarNotificationManager = new COARNotificationManager($conn, $logger);
+    } catch (\cottagelabs\coarNotifications\orm\COARNotificationNoDatabaseException $e) {
+        http_send_status('500');
+        echo 'Database unavailable';
+        if (isset($logger)) {
+            $logger->error($e->getMessage());
+        }
+        return;
+    }
 
-    $actor = new COARNotificationActor($_POST["actor_id"],
-        $_POST["actor_name"], $_POST["actor_type"]);
+    // This represents the entity sending the notification
+    $actor = new COARNotificationActor($_POST["actor_id"], $_POST["actor_name"], $_POST["actor_type"]);
 
-    $object = new COARNotificationObject($_POST["object_id"],
-        $_POST["object_ietf:cite-as"], explode(",", $_POST["object_type"]));
+    // The journal that the actor wishes to publish in
+    $object = new COARNotificationObject($_POST["object_id"], $_POST["object_ietf:cite-as"], explode(",", $_POST["object_type"]));
 
-    $url = new COARNotificationURL($_POST["context_url_id"],
-        $_POST["context_url_media-type"],
-        explode(",", $_POST["context_url_type"]));
+    // The url of the context object, see below
+    $url = new COARNotificationURL($_POST["context_url_id"], $_POST["context_url_media-type"], explode(",", $_POST["context_url_type"]));
 
-    $context = new COARNotificationContext($_POST["context_id"],
-        $_POST["context_ietf:cite-as"],
-        explode(",", $_POST["context_type"]), $url);
+    // The actual content that is to be actioned on
+    $context = new COARNotificationContext($_POST["context_id"], $_POST["context_ietf:cite-as"], explode(",", $_POST["context_type"]), $url);
 
-    $target = new COARNotificationTarget($_POST["target_id"],
-        $_POST["target_inbox"]);
+    // This represents the target system the notification is to be delivered to
+    $target = new COARNotificationTarget($_POST["target_id"], $_POST["target_inbox"]);
 
 
-    $notification = $coarNotificationManager->createOutboundNotification($actor, $object, $context, $target);
+// Create the notification
+    try {
+        $notification = $coarNotificationManager->createOutboundNotification($actor, $object, $context, $target);
+    } catch (Exception $e) {
+        http_send_status('500');
+        echo 'Failed ';
+        if (isset($logger)) {
+            $logger->error($e->getMessage());
+        }
+        return;
+    }
 
     $type = explode(",", $_POST["type"]);
 
@@ -66,7 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $coarNotificationManager->requestReview($notification);
     }
 
-    $msg = $notification->getId() . " created";
+    $idCreated = htmlspecialchars($notification->getId());
+    $msg = sprintf('<a href="/?id=%s">%s</a> created', $idCreated, $idCreated);
 }
 ?>
 <!DOCTYPE html>
@@ -75,8 +93,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $_ENV["APP_NAME"] ?> - COAR Notification Manager</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
@@ -86,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body>
 
-<?php include 'navbar-top.php'; ?>
+<?php include_once 'navbar-top.php'; ?>
 
 <div class="container-fluid">
 
@@ -218,21 +236,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="col">
 
+
             <fieldset>
                 <legend>Preview</legend>
+                <?php if (!empty($msg)): ?>
+                    <div class="alert alert-success" role="alert">
+                        <?= $msg; ?>
+                    </div>
+                <?php endif; ?>
                 <pre id="preview" style="background-color: #cecece;padding:1em;"></pre>
             </fieldset>
-            <br><?= $msg ?>
+            <br>
 
-            <input class="btn btn-primary btn-lg" type="submit" value="Send">
-            </form>
+            <input class="btn btn-primary btn-lg" type="submit" value="Send"></form>
 
         </div>
 
     </div>
 </div>
 
-<?php include 'navbar-bottom.php' ?>
+<?php include_once 'navbar-bottom.php' ?>
 
 </body>
 </html>
