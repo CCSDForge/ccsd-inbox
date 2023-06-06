@@ -4,14 +4,15 @@
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/CCSDForge/coar-notifications"
+      "url": "https://github.com/CottageLabs/coar-notifications"
     }
   ],
   "require": {
     "php": "^7.4",
-    "cottagelabs/coar-notifications": "dev-main",
     "vlucas/phpdotenv": "^5.4",
-    "ext-json": "*"
+    "ext-json": "*",
+    "cottagelabs/coar-notifications": "dev-develop_working",
+    "ext-http": "*"
   },
   "require-dev": {
     "phpmd/phpmd": "@stable",
