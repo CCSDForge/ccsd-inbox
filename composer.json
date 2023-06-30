@@ -11,8 +11,7 @@
     "php": "^7.4",
     "vlucas/phpdotenv": "^5.4",
     "ext-json": "*",
-    "cottagelabs/coar-notifications": "dev-develop_working",
-    "ext-http": "*"
+    "cottagelabs/coar-notifications": "^0.9"
   },
   "require-dev": {
     "phpmd/phpmd": "@stable",
@@ -23,10 +22,5 @@
   "license": "GNU GENERAL PUBLIC LICENSE Version 3",
   "support": {
     "source": "https://github.com/CCSDForge/ccsd-inbox.git"
-  },
-  "config": {
-    "allow-plugins": {
-      "composer/package-versions-deprecated": true
-    }
   }
 }
