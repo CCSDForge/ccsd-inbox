@@ -9,6 +9,7 @@ use cottagelabs\coarNotifications\COARNotificationManager;
 use cottagelabs\coarNotifications\COARNotificationObject;
 use cottagelabs\coarNotifications\COARNotificationTarget;
 use cottagelabs\coarNotifications\COARNotificationURL;
+use cottagelabs\coarNotifications\orm\COARNotificationNoDatabaseException;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
@@ -36,7 +37,7 @@ $msg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $coarNotificationManager = new COARNotificationManager($conn, $logger);
-    } catch (\cottagelabs\coarNotifications\orm\COARNotificationNoDatabaseException $e) {
+    } catch (COARNotificationNoDatabaseException $e) {
         http_send_status('500');
         echo 'Database unavailable';
         if (isset($logger)) {
@@ -93,8 +94,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $_ENV["APP_NAME"] ?> - COAR Notification Manager</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
             integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
