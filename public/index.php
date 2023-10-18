@@ -5,6 +5,7 @@
 
 
 use cottagelabs\coarNotifications\COARNotificationManager;
+use cottagelabs\coarNotifications\orm\COARNotificationNoDatabaseException;
 use cottagelabs\coarNotifications\orm\OutboundCOARNotification;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RotatingFileHandler;
@@ -28,7 +29,7 @@ require __DIR__ . '/db-config.php';
 
 try {
     $coarNotificationManager = new COARNotificationManager($conn, $logger);
-} catch (\cottagelabs\coarNotifications\orm\COARNotificationNoDatabaseException $e) {
+} catch (COARNotificationNoDatabaseException $e) {
     http_send_status('500');
     echo 'Database unavailable';
     if (isset($logger)) {
@@ -48,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $coarNotificationManager->getPostResponse();
-    } catch (\cottagelabs\coarNotifications\orm\COARNotificationNoDatabaseException $e) {
+    } catch (COARNotificationNoDatabaseException $e) {
         http_send_status('500');
         echo 'Service unavailable';
         if (isset($logger)) {
@@ -82,10 +83,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= $_ENV["APP_NAME"] ?> - COAR Notification Manager</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.8.0/build/styles/default.min.css">
+          href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/default.min.css">
 </head>
 
 <body>
@@ -207,10 +208,10 @@ if (isset($notificationFound) && $notificationFound !== '') {
 </div>
 
 <?php include_once 'navbar-bottom.php' ?>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.8.0/build/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
 <script>hljs.highlightAll();</script>
 </body>
 </html>
