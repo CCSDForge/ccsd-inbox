@@ -105,10 +105,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     td {
         font-size: 90%;
     }
-
-    }
-
-
 </style>
 
 <?php include_once 'navbar-top.php'; ?>
