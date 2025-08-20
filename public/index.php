@@ -3,7 +3,6 @@
  * Based on vendor/cottagelabs/coar-notifications/docker/inbox.php
  */
 
-
 use cottagelabs\coarNotifications\COARNotificationManager;
 use cottagelabs\coarNotifications\orm\COARNotificationNoDatabaseException;
 use cottagelabs\coarNotifications\orm\OutboundCOARNotification;

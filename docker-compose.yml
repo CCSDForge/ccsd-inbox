@@ -1,0 +1,32 @@
+services:
+  nginx:
+    build: docker/nginx
+    ports:
+      - "9998:80"
+    networks:
+      - internal
+    volumes:
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./:/var/www/html/
+  php:
+    build: docker/php
+    networks:
+      - internal
+    volumes:
+      - ./:/var/www/html/
+  mysql:
+    build: docker/mysql
+    volumes:
+      - "./docker/mysql/:/tmp/mysql/"
+      #- db-data:/var/lib/mysql:rw
+    command: --sql_mode="NO_ENGINE_SUBSTITUTION"
+    environment:
+      MYSQL_USER: HAL_USER
+      MYSQL_PASSWORD: HAL_PWD
+      MYSQL_DATABASE: HAL_LOCAL
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - internal
+networks:
+  internal:
+    driver: bridge
